@@ -4,7 +4,7 @@ menuconfig PKG_USING_SM30_SENSOR
     bool "sm3041: sm3041 sensor driver package, support: barometric,temperature."
     default n
 
-if PKG_USING_SM930_SENSOR
+if PKG_USING_SM30_SENSOR
     
     config PKG_SM3041_PATH
         string
