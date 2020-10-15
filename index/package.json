@@ -1,0 +1,34 @@
+{
+  "name": "sm3041",
+  "description": "Digital Output SM3041 Medium Pressure Sensor",
+  "description_zn": "中型数字差压传感器 SM3041 驱动软件包",
+  "enable": "PKG_USING_SM30_SENSOR",
+  "keywords": [
+    "sm3041"
+  ],
+  "category": "peripherals/sensors",
+  "author": {
+    "name": "srb178",
+    "email": "1018709932@qq.com",
+    "github": "srb178"
+  },
+  "license": "Apache-2.0",
+  "repository": "https://github.com/srb178/sm3041",
+  "icon": "unknown",
+  "homepage": "unknown",
+  "doc": "unknown",
+  "site": [
+    {
+      "version": "v1.0.0",
+      "URL": "https://github.com/srb178/sm3041.git",
+      "filename": "sm3041-1.0.0.zip",
+      "VER_SHA": "a7f81d1d893281787867fcb203e55ca8be461ccd"
+    },
+    {
+      "version": "latest",
+      "URL": "https://github.com/srb178/sm3041.git",
+      "filename": "sm3041.zip",
+      "VER_SHA": "master"
+    }
+  ]
+}

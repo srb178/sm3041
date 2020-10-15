@@ -1,0 +1,32 @@
+
+# Kconfig file for package sm3041
+menuconfig PKG_USING_SM30_SENSOR
+    bool "sm3041: sm3041 sensor driver package, support: barometric,temperature."
+    default n
+
+if PKG_USING_SM930_SENSOR
+    
+    config PKG_SM3041_PATH
+        string
+        default "/packages/peripherals/sensors/sm3041"
+
+    choice
+        prompt "Version"
+        default PKG_USING_SM3041_LATEST_VERSION
+        help
+            Select the package version
+
+        config PKG_USING_SM3041_V100
+            bool "v1.0.0"
+
+        config PKG_USING_SM3041_LATEST_VERSION
+            bool "latest"
+    endchoice
+          
+    config PKG_SM3041_VER
+       string
+       default "v1.0.0"    if PKG_USING_SM3041_V100
+       default "latest"    if PKG_USING_SM3041_LATEST_VERSION
+
+endif
+
