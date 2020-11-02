@@ -30,8 +30,9 @@ typedef struct sm30_device* sm30_dev_t;
 /* sm3041 device info for RT-Thread sensor device*/
 #define SM3041_PRESSURE_MAX     34474
 #define SM3041_PRESSURE_MIN     0
-#define SM3041_PRESSURE_PERIOD  100  /*10ms */	  /* read ten times in 1 second */
-   
+//#define SM3041_PRESSURE_PERIOD  100   /*10 times*/	   /* read ten times in 1 second */
+#define SM3041_PRESSURE_PERIOD   2   /*500 times*/  /* read 500 times in 1 second */
+  
 
 
 rt_err_t sm3041_device_init(const char* name, struct rt_sensor_config* cfg);

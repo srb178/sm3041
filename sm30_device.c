@@ -4,10 +4,9 @@
 #define DBG_LVL   DBG_LOG
 #include <rtdbg.h>
 
-rt_int32_t pressure_adc30;       /* pressure adc */
-rt_int32_t temperature_adc30;    /* temperature adc */
-double pressure3041;             /* actual pressure */ 
-double temperature3041;          /* actual temperature */
+
+static double pressure3041;             /* actual pressure */ 
+static double temperature3041;          /* actual temperature */
 
 
 /*******************************************************************************
@@ -45,26 +44,27 @@ static rt_err_t sm30_read_regs(rt_sensor_t psensor, rt_uint8_t *data, rt_uint8_t
 /*******************************************************************************
 Fuc: sm30 sensor read for original data
 *******************************************************************************/  
-static rt_err_t sm30_read_adc(rt_sensor_t psensor)
+static rt_err_t sm30_read_adc(rt_sensor_t psensor, double* p3041, double* t3041)
 {
-    rt_uint8_t buf_read[4] = {0};
+    rt_uint8_t buf30_read[4] = {0};
     rt_uint8_t status;
     rt_err_t ans;
     float dat = 0.0f;
-  
-    ans = sm30_read_regs(psensor, buf_read, 4); 
+    rt_int32_t pressure_adc30;       /* pressure adc */
+    rt_int32_t temperature_adc30;    /* temperature adc */
     
+    ans = sm30_read_regs(psensor, buf30_read, 4);  
     if(ans == RT_EOK)
     {
-        status = buf_read[0]>>6;
+        status = buf30_read[0]>>6;
         if(status == 0)
         {
-            pressure_adc30 = ((buf_read[0]&0x3f)<<8) | buf_read[1];
-            temperature_adc30 = (buf_read[2])<<3 | buf_read[3]>>5;
+            pressure_adc30 = ((buf30_read[0]&0x3f)<<8) | buf30_read[1];
+            temperature_adc30 = (buf30_read[2])<<3 | buf30_read[3]>>5;
        
             dat = ( psensor->info.range_max - psensor->info.range_min);
-            pressure3041 = (pressure_adc30 - SM3041_MINCOUNT)* dat/ (SM3041_MAXCOUNT - SM3041_MINCOUNT) + psensor->info.range_min;
-            temperature3041 = (float)temperature_adc30*200/2047 - 50;
+            *p3041 = (pressure_adc30 - SM3041_MINCOUNT)* dat/ (SM3041_MAXCOUNT - SM3041_MINCOUNT) + psensor->info.range_min;
+            *t3041 = (float)temperature_adc30*200/2047 - 50;
             return RT_EOK;
         } 
     }
@@ -89,11 +89,11 @@ static rt_size_t sm30_fetch_data(struct rt_sensor_device *psensor, void *buf, rt
             if(psensor->info.type == RT_SENSOR_CLASS_BARO)
             {
                 /* actual pressure */            
-                if(sm30_read_adc(psensor) == RT_EOK)
+                if(sm30_read_adc(psensor, &pressure3041, &temperature3041) == RT_EOK)
                 {
+                    sensor_data->type = RT_SENSOR_CLASS_BARO;
                     if(len == 1)
-                    { 
-                        sensor_data->type = RT_SENSOR_CLASS_BARO;
+                    {                         
                         if(POINT_NUM == 4)
                         {
                             sensor_data->data.baro = pressure3041*10000;
@@ -107,11 +107,10 @@ static rt_size_t sm30_fetch_data(struct rt_sensor_device *psensor, void *buf, rt
                             sensor_data->data.baro = pressure3041*100;
                         }
                         sensor_data->timestamp = rt_sensor_get_ts();
-                        LOG_I("sm3041 fetch data finished! \r\n");
+                        //LOG_I("sm3041 fetch data finished! \r\n");
                     }
                     else if(len == 2)
-                    {
-                        sensor_data->type = RT_SENSOR_CLASS_BARO;
+                    {                     
                         if(POINT_NUM == 4)
                         {
                             sensor_data->data.baro = pressure3041*10000;
@@ -130,7 +129,7 @@ static rt_size_t sm30_fetch_data(struct rt_sensor_device *psensor, void *buf, rt
                         sensor_data->type = RT_SENSOR_CLASS_TEMP;                
                         sensor_data->data.temp = (temperature3041*100); 
                         sensor_data->timestamp = rt_sensor_get_ts();
-                        LOG_I("sm3041 fetch data finished! \r\n");
+                        //LOG_I("sm3041 fetch data finished! \r\n");
                     }   
                     else
                     {
